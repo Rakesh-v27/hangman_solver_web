@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hangman Solver - Game</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <script>
+    // Function to show the positions input form when user clicks "Yes"
+    function showPositionsBox() {
+      document.getElementById('positionsBox').style.display = 'block';
+    }
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Hangman Solver</h1>
+  </header>
+  <div class="container">
+    <p>Current Pattern: <strong>{{ current_pattern }}</strong></p>
+    <p>Lives Remaining: <strong>{{ life }}</strong></p>
+    
+    <!-- Hangman image based on lives remaining -->
+    <img class="hangman-img" src="{{ url_for('static', filename='images/hangman' ~ life ~ '.png') }}" alt="Hangman Image">
+    
+    <p>Suggested Letter: <strong>{{ guess_letter.upper() }}</strong></p>
+    
+    <div>
+      <p>Is the guess correct?</p>
+      <!-- Yes/No buttons: Yes button triggers the positions input form -->
+      <form method="post">
+        <button type="submit" name="user_answer" value="y" onclick="showPositionsBox(); return false;">Yes</button>
+        <button type="submit" name="user_answer" value="n">No</button>
+      </form>
+    </div>
+    
+    <!-- Hidden positions input box: initially hidden -->
+    <div id="positionsBox" style="display:none; margin-top:20px;">
+      <p>Please enter the positions for the letter (e.g., "1,2-3" or "1,,4") and press Enter:</p>
+      <form action="{{ url_for('positions') }}" method="post">
+        <input type="text" name="positions" required>
+        <button type="submit">Submit Positions</button>
+      </form>
+    </div>
+    
+    <p>Wrong letters so far: {{ session.not_in_list }}</p>
+  </div>
+</body>
+</html>

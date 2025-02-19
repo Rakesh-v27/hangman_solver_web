@@ -1,0 +1,41 @@
+body {
+    background-color: #f4f4f4;
+    font-family: 'Courier New', Courier, monospace;
+    color: #333;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background: #222;
+    color: #fff;
+    padding: 10px 0;
+    margin-bottom: 20px;
+}
+
+.container {
+    width: 90%;
+    margin: 0 auto;
+    max-width: 800px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1em;
+    margin: 5px;
+    cursor: pointer;
+}
+
+input[type="text"] {
+    padding: 8px;
+    font-size: 1em;
+    width: 50%;
+    margin: 10px 0;
+}
+
+/* Example style for the hangman image */
+.hangman-img {
+    max-width: 300px;
+    margin: 20px auto;
+}

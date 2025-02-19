@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Enter Positions</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Enter Letter Positions</h1>
+  </header>
+  <div class="container">
+    {% if error %}
+      <p style="color:red;">{{ error }}</p>
+    {% endif %}
+    <p>For example, for a two-word movie, "1,2-3" means the letter appears at positions 1 and 2 in the first word and at position 3 in the second word.</p>
+    <form method="post">
+      <label for="positions">Enter positions for the letter:</label><br>
+      <input type="text" name="positions" id="positions" required>
+      <button type="submit">Submit Positions</button>
+    </form>
+  </div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Game Over</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Game Over</h1>
+  </header>
+  <div class="container">
+    {% if final_guess %}
+      <p>The movie is: <strong>{{ final_guess }}</strong></p>
+    {% else %}
+      <p>Final Pattern: <strong>{{ current_pattern }}</strong></p>
+      <p>Lives Remaining: <strong>{{ life }}</strong></p>
+    {% endif %}
+    {% if message %}
+      <p>{{ message }}</p>
+    {% endif %}
+    <a href="{{ url_for('index') }}">Start a New Game</a>
+  </div>
+</body>
+</html>
