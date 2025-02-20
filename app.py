@@ -97,8 +97,13 @@ def game():
     
     return render_template('game.html', current_pattern=current_pattern, guess_letter=guess_letter, life=life, candidate_count=candidate_count)
 
-@app.route('/positions', methods=['POST'])
+@app.route('/positions', methods=['GET', 'POST'])
 def positions():
+    if request.method == 'GET':
+        # Render the positions form. This could be integrated in your game.html too.
+        return render_template('positions.html')
+    
+    # If POST: process the submitted positions.
     pos_input = request.form.get('positions').strip()  # E.g., "1,2-3" or "1,,4"
     word_lengths = session.get('word_lengths')
     current_pattern = session.get('current_pattern')
@@ -107,7 +112,6 @@ def positions():
     # Split on '-' to get groups for each word.
     pos_parts = pos_input.split('-')
     if len(pos_parts) != len(word_lengths):
-        # Instead of rendering a separate template, you can flash an error or store it in the session.
         session['error'] = "The number of position groups does not match the number of words. Please try again."
         return redirect(url_for('game'))
     
