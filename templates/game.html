@@ -3,46 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <title>Hangman Solver - Game</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <script>
-    // Function to show the positions input form when user clicks "Yes"
+    // Show the positions input box when the "Yes" button is clicked
     function showPositionsBox() {
       document.getElementById('positionsBox').style.display = 'block';
     }
   </script>
 </head>
 <body>
-  <header>
+  <header class="bg-dark text-light text-center py-3 mb-4">
     <h1>Hangman Solver</h1>
   </header>
   <div class="container">
-    <p>Current Pattern: <strong>{{ current_pattern }}</strong></p>
-    <p>Lives Remaining: <strong>{{ life }}</strong></p>
-    
-    <!-- Hangman image based on lives remaining -->
-    <img class="hangman-img" src="{{ url_for('static', filename='images/hangman' ~ life ~ '.png') }}" alt="Hangman Image">
-    
-    <p>Suggested Letter: <strong>{{ guess_letter.upper() }}</strong></p>
-    
-    <div>
-      <p>Is the guess correct?</p>
-      <!-- Yes/No buttons: Yes button triggers the positions input form -->
-      <form method="post">
-        <button type="submit" name="user_answer" value="y" onclick="showPositionsBox(); return false;">Yes</button>
-        <button type="submit" name="user_answer" value="n">No</button>
-      </form>
+    <div class="card p-4">
+      <div class="mb-3">
+        <h4>Current Pattern: <strong>{{ current_pattern }}</strong></h4>
+        <p>Lives Remaining: <strong>{{ life }}</strong></p>
+      </div>
+      <div class="text-center mb-3">
+        <!-- Dynamically load hangman image based on current lives -->
+        <img class="hangman-img img-fluid" src="{{ url_for('static', filename='images/hangman' ~ life ~ '.png') }}" alt="Hangman Image">
+      </div>
+      <div class="mb-3">
+        <h5>Suggested Letter: <strong>{{ guess_letter.upper() }}</strong></h5>
+      </div>
+      <div class="mb-3">
+        <p>Is the guess correct?</p>
+        <form method="post">
+          <!-- "Yes" button triggers the positions input box -->
+          <button type="submit" name="user_answer" value="y" class="btn btn-danger" onclick="showPositionsBox(); return false;">Yes</button>
+          <button type="submit" name="user_answer" value="n" class="btn btn-danger">No</button>
+        </form>
+      </div>
+      <!-- Hidden positions input box -->
+      <div id="positionsBox" style="display:none;" class="mb-3">
+        <p>Please enter the positions for the letter (e.g., "1,2-3" or "1,,4") and press Enter:</p>
+        <form action="{{ url_for('positions') }}" method="post">
+          <input type="text" name="positions" class="form-control" required>
+          <button type="submit" class="btn btn-danger mt-2">Submit Positions</button>
+        </form>
+      </div>
+      <div class="mb-3">
+        <p>Wrong letters so far: <strong>{{ session.not_in_list }}</strong></p>
+      </div>
     </div>
-    
-    <!-- Hidden positions input box: initially hidden -->
-    <div id="positionsBox" style="display:none; margin-top:20px;">
-      <p>Please enter the positions for the letter (e.g., "1,2-3" or "1,,4") and press Enter:</p>
-      <form action="{{ url_for('positions') }}" method="post">
-        <input type="text" name="positions" required>
-        <button type="submit">Submit Positions</button>
-      </form>
-    </div>
-    
-    <p>Wrong letters so far: {{ session.not_in_list }}</p>
   </div>
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
