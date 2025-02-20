@@ -2,7 +2,9 @@ import time
 import string
 import re
 import pandas as pd
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for, send_from_directory
+
+
 
 # Import helper functions from hangman_solver.py
 from hangman_solver import get_letter_frequencies, filter_titles, movie_list_function
@@ -41,61 +43,89 @@ def index():
         return redirect(url_for('game'))
     return render_template('index.html')
 
-# Main game route: Implements the game loop.
+
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    return send_from_directory('static', filename)
+
 @app.route('/game', methods=['GET', 'POST'])
 def game():
-    current_pattern = session.get('current_pattern')
-    life = session.get('life')
-    not_in_list = session.get('not_in_list')
-    word_lengths = session.get('word_lengths')
-    flag = session.get('flag')
-    
+    # Initialize session variables if they do not exist
+    if 'life' not in session or session.get('life') is None:
+        session['life'] = 10
+    if 'current_pattern' not in session or session.get('current_pattern') is None:
+        return redirect(url_for('index'))
+    if 'not_in_list' not in session or session.get('not_in_list') is None:
+        session['not_in_list'] = []
+    if 'word_lengths' not in session or session.get('word_lengths') is None:
+        return redirect(url_for('index'))
+    if 'flag' not in session or session.get('flag') is None:
+        session['flag'] = 0
+
+    # Retrieve and enforce proper types from the session
+    try:
+        life = int(session.get('life', 10))
+    except (TypeError, ValueError):
+        session['life'] = 10
+        life = 10
+
+    current_pattern = session.get('current_pattern', '')
+    not_in_list = session.get('not_in_list', [])
+    word_lengths = session.get('word_lengths', [])
+    try:
+        flag = int(session.get('flag', 0))
+    except (TypeError, ValueError):
+        session['flag'] = 0
+        flag = 0
+
     # Game over conditions: solved, out of lives, or unique candidate found.
     if life <= 0 or ('_' not in current_pattern) or flag == 1:
         final_guess = session.get('final_guess', None)
         return render_template('game_over.html', current_pattern=current_pattern, life=life, final_guess=final_guess)
-    
+
     # 1. Get candidate movies using the current pattern.
     candidate_list = movie_list_function(current_pattern)
+
     # 2. Filter candidates by desired word count and excluding letters that were wrong.
     filtered_candidates = filter_titles(candidate_list, len(word_lengths), not_in_list)
     candidate_count = len(filtered_candidates)
-    
+
     # 3. Get letter frequencies from the filtered candidate list.
     freq_dict = get_letter_frequencies(filtered_candidates)
-    
-    # If only one candidate remains, record it as final guess.
+
+    # If only one candidate remains, record it as the final guess.
     if len(set(filtered_candidates)) == 1:
         session['flag'] = 1
         session['final_guess'] = list(set(filtered_candidates))[0]
         return redirect(url_for('game'))
-    
+
     # 4. Choose the next guess: first letter not already guessed.
     guess_letter = None
     for letter in freq_dict.keys():
         if letter not in current_pattern and letter not in not_in_list:
             guess_letter = letter
             break
+
     if guess_letter is None:
         return render_template('game_over.html', message="No new letters to guess.", current_pattern=current_pattern, life=life)
-    
+
     session['guess_letter'] = guess_letter
-    
+
     # Process user response on whether the guess was correct.
     if request.method == 'POST':
-        user_answer = request.form.get('user_answer').strip().lower()
+        user_answer = request.form.get('user_answer', '').strip().lower()
         if user_answer == 'y':
             # If correct, go to positions route to update pattern.
             return redirect(url_for('positions'))
         else:
             # Wrong guess: update life and record the guess.
-            life -= 1
+            session['life'] = max(0, life - 1)
             not_in_list.append(guess_letter)
-            session['life'] = life
             session['not_in_list'] = not_in_list
             return redirect(url_for('game'))
-    
+
     return render_template('game.html', current_pattern=current_pattern, guess_letter=guess_letter, life=life, candidate_count=candidate_count)
+
 
 @app.route('/positions', methods=['GET', 'POST'])
 def positions():
