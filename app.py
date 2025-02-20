@@ -8,7 +8,7 @@ from flask import Flask, render_template, request, session, redirect, url_for
 from hangman_solver import get_letter_frequencies, filter_titles, movie_list_function
 
 # Load your movie dataset (ensure movies.csv is in the same directory)
-movies = pd.read_csv('movies.csv')
+movies = pd.read_csv('movies.csv', usecols=["primaryTitle"])
 
 # Create the Flask app
 app = Flask(__name__)
