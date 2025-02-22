@@ -3,17 +3,16 @@ import pandas as pd
 import re
 
 
-# Load the movies dataset (Ensure movies.csv is in the same directory)
 try:
     movies = pd.read_csv("movies.csv")
     if "primaryTitle" not in movies.columns:
         raise ValueError("CSV file must contain a 'primaryTitle' column")
 except FileNotFoundError:
     print("Error: movies.csv not found. Please ensure it exists in the project directory.")
-    movies = pd.DataFrame(columns=["primaryTitle"])  # Empty DataFrame to prevent crashes.
+    movies = pd.DataFrame(columns=["primaryTitle"])  
 except Exception as e:
     print(f"Error loading movies.csv: {e}")
-    movies = pd.DataFrame(columns=["primaryTitle"])  # Handle unexpected errors safely.
+    movies = pd.DataFrame(columns=["primaryTitle"]) 
 
 def get_letter_frequencies(movie_list):
     """
@@ -26,14 +25,12 @@ def get_letter_frequencies(movie_list):
     if total_movies == 0:
         return {}
     
-    # Normalize each title to lowercase.
     normalized_titles = [title.lower() for title in movie_list]
     alphabet = set(string.ascii_lowercase)
     percentages = {}
     for letter in alphabet:
         count = sum(1 for t in normalized_titles if letter in t)
         percentages[letter] = (count / total_movies) * 100
-    # Sort the dictionary by percentage in descending order.
     sorted_percentages = dict(sorted(percentages.items(), key=lambda x: x[1], reverse=True))
     return sorted_percentages
 
@@ -53,13 +50,10 @@ def filter_titles(titles, desired_word_count, not_in):
     """
     filtered = []
     for title in titles:
-        # Check if the title has the exact number of words.
         if len(title.split()) != desired_word_count:
             continue
-        
-        # Convert title to lowercase for case-insensitive checking.
+
         lower_title = title.lower()
-        # Skip titles that contain any letter in the not_in list.
         if any(letter in lower_title for letter in not_in):
             continue
         
@@ -77,19 +71,14 @@ def movie_list_function(user_pattern):
     
     The function converts underscores to '.' (regex wildcard) and uses a whitespace pattern for the dot.
     """
-    # Ensure normalized titles exist.
     if 'normalized_title' not in movies.columns:
         movies['normalized_title'] = movies['primaryTitle'].str.lower().str.strip()
     
-    # Split the user pattern on '.' to separate words.
     parts = user_pattern.split('.')
-    # Replace underscores with '.' for regex matching.
     word_patterns = [part.replace('_', '.') for part in parts]
-    # Join the word patterns with a whitespace regex (\s) and add start/end anchors.
     regex_pattern = "^" + r"\s".join(word_patterns) + "$"
-    print("Regex pattern:", regex_pattern)  # Debug output
+    print("Regex pattern:", regex_pattern) 
     
-    # Use pandas' vectorized string matching to filter titles.
     matching_movies = movies[movies['normalized_title'].str.fullmatch(regex_pattern, na=False)]
     matching_movie_list = matching_movies['primaryTitle'].tolist()
     return matching_movie_list
