@@ -8,10 +8,7 @@
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <script>
-    // Show the positions input box when the "Yes" button is clicked
-    function showPositionsBox() {
-      document.getElementById('positionsBox').style.display = 'block';
-    }
+    // Optionally, you can have JavaScript to handle UI actions.
   </script>
 </head>
 <body>
@@ -34,17 +31,8 @@
       <div class="mb-3">
         <p>Is the guess correct?</p>
         <form method="post">
-          <!-- "Yes" button triggers the positions input box -->
-          <button type="submit" name="user_answer" value="y" class="btn btn-danger" onclick="showPositionsBox(); return false;">Yes</button>
+          <button type="submit" name="user_answer" value="y" class="btn btn-danger">Yes</button>
           <button type="submit" name="user_answer" value="n" class="btn btn-danger">No</button>
-        </form>
-      </div>
-      <!-- Hidden positions input box -->
-      <div id="positionsBox" style="display:none;" class="mb-3">
-        <p>Please enter the positions for the letter (e.g., "1,2-3" or "1,,4") and press Enter:</p>
-        <form action="{{ url_for('positions') }}" method="post">
-          <input type="text" name="positions" class="form-control" required>
-          <button type="submit" class="btn btn-danger mt-2">Submit Positions</button>
         </form>
       </div>
       <div class="mb-3">

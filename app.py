@@ -126,36 +126,32 @@ def game():
 
     return render_template('game.html', current_pattern=current_pattern, guess_letter=guess_letter, life=life, candidate_count=candidate_count)
 
-
 @app.route('/positions', methods=['GET', 'POST'])
 def positions():
     if request.method == 'GET':
-        # Render the positions form. This could be integrated in your game.html too.
-        return render_template('positions.html')
+        # Retrieve word lengths from session to dynamically render inputs.
+        word_lengths = session.get('word_lengths', [])
+        return render_template('positions.html', word_lengths=word_lengths)
     
-    # If POST: process the submitted positions.
-    pos_input = request.form.get('positions').strip()  # E.g., "1,2-3" or "1,,4"
-    word_lengths = session.get('word_lengths')
-    current_pattern = session.get('current_pattern')
-    guess_letter = session.get('guess_letter')
-    
-    # Split on '-' to get groups for each word.
-    pos_parts = pos_input.split('-')
-    if len(pos_parts) != len(word_lengths):
-        session['error'] = "The number of position groups does not match the number of words. Please try again."
-        return redirect(url_for('game'))
+    # For POST: Process each word's input from separate fields.
+    word_lengths = session.get('word_lengths', [])
+    current_pattern = session.get('current_pattern', '')
+    guess_letter = session.get('guess_letter', '')
     
     positions_by_word = []
-    for group in pos_parts:
-        group = group.strip()
-        if group == "":
+    # Expect input fields named positions_0, positions_1, ... (one per word)
+    for i in range(len(word_lengths)):
+        input_val = request.form.get(f'positions_{i}', '').strip()
+        if input_val == "":
+            # No positions indicated for this word.
             positions_by_word.append([])
         else:
             try:
-                positions = [int(pos.strip()) for pos in group.split(',') if pos.strip() != ""]
+                # Split by commas and convert to integers.
+                positions = [int(x.strip()) for x in input_val.split(',') if x.strip() != ""]
             except ValueError:
-                session['error'] = "Invalid position input. Please enter valid numbers."
-                return redirect(url_for('game'))
+                session['error'] = f"Invalid input for word {i+1}. Please enter valid numbers."
+                return redirect(url_for('positions'))
             positions_by_word.append(positions)
     
     # Update the current pattern with the guessed letter at the indicated positions.
@@ -167,10 +163,12 @@ def positions():
             if 1 <= pos <= len(word_chars):
                 word_chars[pos - 1] = guess_letter
         updated_words.append(''.join(word_chars))
+    
     updated_pattern = '.'.join(updated_words)
     session['current_pattern'] = updated_pattern
     
     return redirect(url_for('game'))
+
 
 # Run the Flask app.
 if __name__ == '__main__':
