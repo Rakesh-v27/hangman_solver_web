@@ -1,13 +1,9 @@
-/* Custom Hangman Theme */
-
-/* Body styling */
 body {
     background-color: #2c3e50;
     color: #ecf0f1;
     font-family: 'Helvetica Neue', Arial, sans-serif;
 }
 
-/* Header styling */
 header {
     background: #34495e;
     padding: 20px;
@@ -15,14 +11,12 @@ header {
     border-bottom: 2px solid #ecf0f1;
 }
 
-/* Container card styling */
 .card {
     background: rgba(0, 0, 0, 0.6);
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-/* Custom button style */
 .btn-danger {
     background-color: #e74c3c;
     border-color: #e74c3c;
@@ -33,13 +27,12 @@ header {
     border-color: #c0392b;
 }
 
-/* Hangman image styling */
+
 .hangman-img {
     border: 3px solid #ecf0f1;
     border-radius: 8px;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     header h1 {
         font-size: 2rem;
