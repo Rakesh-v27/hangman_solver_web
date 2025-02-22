@@ -12,6 +12,7 @@ movies = pd.read_csv('movies.csv', usecols=["primaryTitle"])
 
 
 app = Flask(__name__)
+app.secret_key = "1@2@3@4@5"
 
 
 @app.route('/', methods=['GET', 'POST'])
